@@ -1,4 +1,4 @@
-from ArsCommentScraperTrendyolFunctions import getLastCommentDate, writeLastCommentDate, getCommentCountInFile, writeTodayDateToFile, getMainPageJSON, returnRequestURLofComments, DataOfProduct, getContentOfComments, writeCommentsToFile
+#from ArsCommentScraperTrendyolFunctions import getLastCommentDate, writeLastCommentDate, getCommentCountInFile, writeTodayDateToFile, getMainPageJSON, returnRequestURLofComments, DataOfProduct, getContentOfComments, writeCommentsToFile
 from configTrendyol import *
 from TrendyolClass import *
 
@@ -63,5 +63,5 @@ if __name__ == "__main__":
           else:
             continue
   
-  writeCommentsToFile(everyItem, commentCountInFile)
-  writeTodayDateToFile()
+  trendyol.writeCommentsToFile(everyItem, commentCountInFile)
+  trendyol.writeTodayDateToFile()
