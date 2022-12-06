@@ -17,23 +17,23 @@ class Trendyol:
         self.today = today
         self.QueryPage = QueryPage
 
-    def writeLastCommentDate(self, file, lastCommentDate): 
-        f = open(file,"w+")
+    def writeLastCommentDate(self, lastCommentDate): 
+        f = open(self.file,"w+")
         f.write(lastCommentDate)
         f.close()
         
-    def getLastCommentDate(self, file): 
+    def getLastCommentDate(self): 
         lastCommentDate = "1900-01-01"
         try:
-            with open(file) as f:
+            with open(self.file) as f:
                 lastCommentDate = f.read()    
         except IOError:
-            self.writeLastCommentDate(file, lastCommentDate)
+            self.writeLastCommentDate(lastCommentDate)
         else:
             f.close()
             if lastCommentDate == "":  
                 lastCommentDate = "1900-01-01"
-                self.writeLastCommentDate(file, lastCommentDate)
+                self.writeLastCommentDate(lastCommentDate)
         finally:
             return lastCommentDate
     
