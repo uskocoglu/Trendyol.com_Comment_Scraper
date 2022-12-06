@@ -58,7 +58,7 @@ class Trendyol:
         f.write(str(today))
         f.close()
 
-    def getMainPageJSON(url):
+    def getMainPageJSON(self, url):
         r = requests.get(url)
         html = BeautifulSoup(r.content, "lxml")
         pageContent = html.p.text
@@ -66,7 +66,7 @@ class Trendyol:
         
         return jsonDataMain
 
-    def returnRequestURLofComments(productURL, pageNumber):
+    def returnRequestURLofComments(self, productURL, pageNumber):
         index = productURL.find("?boutiqueId")
         firstNumber = productURL.rfind("-")
         secondNumber = productURL.rfind("=")
@@ -74,13 +74,13 @@ class Trendyol:
 
         return requestURL
 
-    def DataOfProduct(requestURL):
+    def DataOfProduct(self, requestURL):
         req = requests.get(requestURL)
         jsonData = json.loads(req.content)
         
         return jsonData
 
-    def getContentOfComments(js, productURL, input):
+    def getContentOfComments(self, js, productURL, input):
         dic = {}
         dic['productTitle'] = input['name']
         dic['commentTitle'] = js['commentTitle']
