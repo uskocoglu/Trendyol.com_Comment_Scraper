@@ -1,0 +1,1 @@
+URL_n11 = "https://www.n11.com/arama?q=ar%C3%A7elik&srt=REVIEWS&pg=1"
