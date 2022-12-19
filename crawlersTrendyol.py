@@ -1,6 +1,5 @@
 import requests
 from bs4 import BeautifulSoup
-import time
 import pandas as pd
 import json
 from datetime import date
@@ -108,3 +107,64 @@ class Trendyol:
         with pd.ExcelWriter(f"commentData{self.companyName}.xlsx", engine='openpyxl', mode ='a', if_sheet_exists='overlay') as writer:
             df.to_excel(writer, sheet_name=self.companyName, startrow=commentCountInFile, index = False, header= False)
             writer.save()
+
+    def crawlData(self):
+        lastCommentDate = self.getLastCommentDate()
+        commentCountInFile = self.getCommentCountInFile()
+
+        for x in range (1, self.QueryPage):
+            URL = f'https://public.trendyol.com/discovery-web-searchgw-service/v2/api/infinite-scroll/sr?q=beyaz+e%C5%9Fya&qt=beyaz+e%C5%9Fya&st=beyaz+e%C5%9Fya&os=1&sst=MOST_RATED&pi={x}&culture=tr-TR&userGenderId=1&pId=0&scoringAlgorithmId=2&categoryRelevancyEnabled=false&isLegalRequirementConfirmed=false&searchStrategyType=DEFAULT&productStampType=TypeA&fixSlotProductAdsIncluded=true&initialSearchText=beyaz+e%C5%9Fya'
+
+            jsonDataMain = self.getMainPageJSON(URL)
+
+            for input in jsonDataMain['result']['products']:
+
+                productURL = "https://www.trendyol.com" + input['url']
+                requestURL = self.returnRequestURLofComments(productURL, 0)
+                jsonData = self.DataOfProduct(requestURL)
+
+                if (jsonData['statusCode'] == 200):
+                    totalPages = jsonData['result']['productReviews']['totalPages'] #147
+                else:
+                    totalPages = 3
+
+                if (jsonData['statusCode'] == 200):
+                    for js in jsonData['result']['productReviews']['content']:
+                        if (datetime.fromisoformat(js['commentDateISOtype']) > datetime.fromisoformat(lastCommentDate)):
+                            commentDic = self.getContentOfComments(js, productURL, input)
+                            self.everyItem.append(commentDic)
+                        else:
+                            break
+
+
+                if totalPages > 100:
+                    for k in range (1, 100):
+                        requestURL2 = self.returnRequestURLofComments(productURL, k)
+                        jsonData2 = self.DataOfProduct(requestURL2)
+
+                        if (jsonData2['statusCode'] == 200):
+                            for js in jsonData2['result']['productReviews']['content']:
+                                if(datetime.fromisoformat(js['commentDateISOtype']) > datetime.fromisoformat(lastCommentDate)):
+                                    commentDic2 = self.getContentOfComments(js, productURL, input)
+                                    self.everyItem.append(commentDic2)
+                                else:
+                                    break
+                        else:
+                            continue
+
+                else:
+                    for k in range (2, totalPages-1):
+                        requestURL2 = self.returnRequestURLofComments(productURL, k)
+                        jsonData2 = self.DataOfProduct(requestURL2)
+
+                        if (jsonData2['statusCode'] == 200):
+                            for js in jsonData2['result']['productReviews']['content']:
+                                if(datetime.fromisoformat(js['commentDateISOtype']) > datetime.fromisoformat(lastCommentDate)):
+                                    commentDic2 = self.getContentOfComments(js, productURL, input)
+                                    self.everyItem.append(commentDic2)
+                                else:
+                                    break
+                        else:
+                            continue
+        self.writeCommentsToFile(everyItem, commentCountInFile)
+        self.writeTodayDateToFile()
