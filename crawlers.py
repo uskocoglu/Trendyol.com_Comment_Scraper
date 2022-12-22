@@ -8,6 +8,7 @@ from datetime import datetime
 from math import ceil
 from time  import sleep
 from config import *
+import streamlit as st
 
 class Base():   
     def __init__(self):   
@@ -75,7 +76,8 @@ class Base():
         return BeautifulSoup(page.content, "html.parser")
 
     def writeCommentsToFile(self, df):
-
+        with st.empty():
+            st.write(df) 
         with pd.ExcelWriter(f"commentData{self.companyName}.xlsx", engine='openpyxl', mode ='a', if_sheet_exists='overlay') as writer:  
             df.to_excel(writer, sheet_name=self.companyName, startrow=Base.getCommentCountInFile(self.companyName)+1, index = False, header= False)
   
