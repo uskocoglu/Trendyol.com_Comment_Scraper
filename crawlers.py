@@ -381,7 +381,7 @@ class N11(Base):
 
             if pageCount is not None:
                 yorumLinkleri = self.getCommentLinks(ilkYorumSayfasi, urun_id)
-                allComments = self.getEveryComments(yorumLinkleri, urunAdi, urunLink)
+                allComments = self.getEveryComments(yorumLinkleri, urunAdi, urunLink, lastCommentDate)
                 df = pd.DataFrame(allComments)
                 print(df)
                 Base.writeCommentsToFile(self, df)
@@ -426,45 +426,52 @@ class N11(Base):
             yorumLinkleri.append(yorumsayfasi)
         return yorumLinkleri
 
-    def getEveryComments(self, yorumLinkleri, urunAdi, urunLink):
+    def getEveryComments(self, yorumLinkleri, urunAdi, urunLink, lastCommentDate):
         everyItem = []
         for yorumlink in yorumLinkleri:
             yorumlar_soup = Base.getSoup(self, yorumlink)
             yorumlar = yorumlar_soup.find_all("li", attrs={"class": "comment"})
             for yorum in yorumlar:
-                dic = {}
-                dic['productTitle'] = urunAdi
-                title = yorum.find("h5", attrs={"class": "commentTitle"})
-                if title is not None:
-                    dic['commentTitle'] = yorum.find("h5", attrs={"class": "commentTitle"}).text
-                else:
-                    dic['commentTitle'] = NE
-                dic['buyerName'] = yorum.find("span", attrs={"class": "userName"}).text
                 date = yorum.find("span", attrs={"class": "commentDate"})
                 if date is not None:
-                    dic['date'] = yorum.find("span", attrs={"class": "commentDate"}).text
+                    dayDate = date.text[0:2]
+                    monthDate = date.text[3:5]
+                    yearDate = date.text[6:10]
+                    finalDate = f"{yearDate}-{monthDate}-{dayDate}"
+                    if (datetime.fromisoformat(finalDate) > datetime.fromisoformat(lastCommentDate)):
+                        dic = {}
+                        dic['productTitle'] = urunAdi
+                        title = yorum.find("h5", attrs={"class": "commentTitle"})
+                        if title is not None:
+                            dic['commentTitle'] = yorum.find("h5", attrs={"class": "commentTitle"}).text
+                        else:
+                            dic['commentTitle'] = NE
+                        dic['buyerName'] = yorum.find("span", attrs={"class": "userName"}).text
+                        dic['date'] = yorum.find("span", attrs={"class": "commentDate"}).text
+                        comment = yorum.find("p")
+                        if comment is not None:
+                            dic['comment'] = yorum.find("p").text
+                        else:
+                            dic['comment'] = NE
+                        votesLike = yorum.find("em")
+                        if votesLike is not None:
+                            dic['votesLike'] = yorum.find("em").text
+                        else:
+                            dic['votesLike'] = NE
+                        dic['votesDislike'] = NA
+                        dic['rating'] = yorum.find("div", attrs={"class": "ratingCont"}).span.get("class")
+                        dic['buyerAge'] = NA
+                        dic['seller'] = NA
+                        dic['verification'] = NA
+                        dic['color'] = NA
+                        dic['buyerLocation'] = NA
+                        dic['totalRating'] = NA
+                        dic['productURL'] = urunLink 
+                        everyItem.append(dic)
+                    else:
+                        continue
                 else:
-                    dic['date'] = NE
-                comment = yorum.find("p")
-                if comment is not None:
-                    dic['comment'] = yorum.find("p").text
-                else:
-                    dic['comment'] = NE
-                votesLike = yorum.find("em")
-                if votesLike is not None:
-                    dic['votesLike'] = yorum.find("em").text
-                else:
-                    dic['votesLike'] = NE
-                dic['votesDislike'] = NA
-                dic['rating'] = yorum.find("div", attrs={"class": "ratingCont"}).span.get("class")
-                dic['buyerAge'] = NA
-                dic['seller'] = NA
-                dic['verification'] = NA
-                dic['color'] = NA
-                dic['buyerLocation'] = NA
-                dic['totalRating'] = NA
-                dic['productURL'] = urunLink 
-                everyItem.append(dic)
+                    continue
 
         return everyItem
 

@@ -16,6 +16,6 @@ amazonURL1 = 'https://www.amazon.com.tr/s?k=ar%C3%A7elik&i=kitchen&bbn=124667810
 # amazonURL1 = 'https://www.amazon.com.tr/s?k=beko&i=kitchen&page=3&crid=2U99HYJ3R1YKA&qid=1670183257&sprefix=beko%2Ckitchen%2C153&ref=sr_pg_3'
 # amazonURL1 = 'https://www.amazon.com.tr/s?k=ar%C3%A7elik&s=review-rank&crid=S6OYEYZJGD4S&qid=1670264949&sprefix=%2Caps%2C176&ref=sr_st_review-rank&ds=v1%3AbB7k6BOQHM8YhMVXIN%2FQP2aDTUz6HNodKQfjOzcyg4Y'
 
-n11URL = "https://www.n11.com/arama?q=ar%C3%A7elik&srt=REVIEWS&pg=1"
+n11URL = "https://www.n11.com/beyaz-esya?srt=REVIEWS&ipg=1"
 
 QueryPage = 21
