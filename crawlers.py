@@ -8,7 +8,6 @@ from datetime import datetime
 from math import ceil
 from time  import sleep
 from config import *
-import streamlit as st
 
 class Base():   
     def __init__(self):   
@@ -76,8 +75,7 @@ class Base():
         return BeautifulSoup(page.content, "html.parser")
 
     def writeCommentsToFile(self, df):
-        with st.empty():
-            st.write(df) 
+
         with pd.ExcelWriter(f"commentData{self.companyName}.xlsx", engine='openpyxl', mode ='a', if_sheet_exists='overlay') as writer:  
             df.to_excel(writer, sheet_name=self.companyName, startrow=Base.getCommentCountInFile(self.companyName)+1, index = False, header= False)
   
@@ -434,11 +432,11 @@ class N11(Base):
             for yorum in yorumlar:
                 date = yorum.find("span", attrs={"class": "commentDate"})
                 if date is not None:
-                    dayDate = date.text[0:2]
-                    monthDate = date.text[3:5]
-                    yearDate = date.text[6:10]
-                    finalDate = f"{yearDate}-{monthDate}-{dayDate}"
-                    if (datetime.fromisoformat(finalDate) > datetime.fromisoformat(lastCommentDate)):
+                    listObjectDate = date.text.split()
+                    myStringDate = listObjectDate[0]
+                    stringDateToConvert = myStringDate[0:2] + "/" + myStringDate[3:5] + "/" + myStringDate[6:10]
+                    finalDate = datetime.strptime(stringDateToConvert, "%d/%m/%Y")
+                    if (finalDate > datetime.fromisoformat(lastCommentDate)):
                         dic = {}
                         dic['productTitle'] = urunAdi
                         title = yorum.find("h5", attrs={"class": "commentTitle"})
