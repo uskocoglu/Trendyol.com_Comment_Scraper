@@ -434,11 +434,11 @@ class N11(Base):
             for yorum in yorumlar:
                 date = yorum.find("span", attrs={"class": "commentDate"})
                 if date is not None:
-                    dayDate = date.text[0:2]
-                    monthDate = date.text[3:5]
-                    yearDate = date.text[6:10]
-                    finalDate = f"{yearDate}-{monthDate}-{dayDate}"
-                    if (datetime.fromisoformat(finalDate) > datetime.fromisoformat(lastCommentDate)):
+                    listObjectDate = date.text.split()
+                    myStringDate = listObjectDate[0]
+                    stringDateToConvert = myStringDate[0:2] + "/" + myStringDate[3:5] + "/" + myStringDate[6:10]
+                    finalDate = datetime.strptime(stringDateToConvert, "%d/%m/%Y")
+                    if (finalDate > datetime.fromisoformat(lastCommentDate)):
                         dic = {}
                         dic['productTitle'] = urunAdi
                         title = yorum.find("h5", attrs={"class": "commentTitle"})
